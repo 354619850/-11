@@ -1,0 +1,80 @@
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter; 
+  
+public class DataDownUtil {  
+    public static void main(String[] args) throws FileNotFoundException {  
+    	String html = getByUrlHtml("http://sou.zhaopin.com/jobs/searchresult.ashx?jl=%E5%8D%97%E6%98%8C&kw=java&sm=0&p=1","utf-8");
+    	
+    	Document document = Jsoup.parse(html);
+    	Element element = document.getElementById("newlist_list_content_table");
+    	Elements elements = document.getElementsByClass("newlist");
+    	File fp=new File("d:\\a.txt");
+        
+        PrintWriter pfp= new PrintWriter(fp);
+    	for(Element el : elements) {
+    		String jobName = el.getElementsByClass("zwmc").text();
+    		String textTitle = el.getElementsByClass("gsmc").text();
+    		String money = el.getElementsByClass("zwyx").text();
+    		String date = el.getElementsByClass("gxsj").text();
+    		System.out.println(jobName);
+    		System.out.println(textTitle);
+    		System.out.println(money);
+    		System.out.println(date);
+    		jobName+="\r\n";
+    		textTitle+="\r\n";
+    		money+="\r\n";
+    		date+="\r\n";
+           pfp.print(jobName);
+           pfp.print(textTitle);
+           pfp.print(money);
+           pfp.print(date);
+           
+    	}
+    	
+    	pfp.close();
+       
+}  
+public static String getByUrlHtml(String urlObj,String encoding) {
+	InputStreamReader isr = null;
+	StringBuffer sb = new StringBuffer();
+	BufferedReader bf = null;
+	try {
+		URL url = new URL(urlObj);
+		URLConnection uc = url.openConnection();
+		isr = new InputStreamReader(uc.getInputStream(),"utf-8");
+		bf = new BufferedReader(isr);
+		String temp = null;
+		while((temp=bf.readLine())!=null) {
+			sb.append(temp+"\n");
+		}
+	}catch(MalformedURLException e) {
+		System.out.println("ŒﬁÕ¯¬Á");
+		e.printStackTrace();
+	}catch(IOException e) {
+		System.out.println("«Î÷ÿ ‘");
+		e.printStackTrace();
+	}finally {
+		try {
+			if(bf!=null) {bf.close();}
+			if(isr!=null) {isr.close();}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}return sb.toString();
+}
+}
